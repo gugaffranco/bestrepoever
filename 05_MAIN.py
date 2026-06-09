@@ -2,6 +2,7 @@ from preprocessing_final import load_data, clean_data, create_features, scale_an
 from modeling_final import remove_outliers, fit_kmeans, assign_all_labels, save_cluster_assignments
 from association_final import basket_operations, get_all_cluster_rules, print_cluster_rules
 
+
 # Columns to use for clustering
 cluster_features = [
     'age',
@@ -24,6 +25,7 @@ cluster_features = [
     'has_loyalty_card',
     'loyal_long_timer',
 ]
+
 
 if __name__ == '__main__':
     cust_info = load_data('customer_info.csv')

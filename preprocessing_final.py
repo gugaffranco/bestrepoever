@@ -1,13 +1,14 @@
 import pandas as pd
 import numpy as np
+
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
 
 
 def load_data(path):
     cust_info=pd.read_csv(path)
     cust_info=cust_info.set_index('customer_id')
+    print(f'Data loaded: {path}')
     return cust_info
 
 
@@ -50,6 +51,8 @@ def clean_data(cust_info):
     # Cap pre-2000 to 2000 (earliest plausible year)
     cust_info['year_first_transaction'] = cust_info['year_first_transaction'].clip(lower=2000)
     
+    print('\nData cleaned')
+
     return cust_info
 
 
@@ -66,11 +69,12 @@ def create_features(cust_info):
     cust_info['loyal_long_timer'] = (reference_date.year - cust_info['year_first_transaction']) * cust_info['has_loyalty_card']
 
     cust_info = cust_info.replace([np.inf, -np.inf], 0) #sets all infinite values to 0
+    print('Features created')
 
     return cust_info
 
 
-def scale_and_reduce(cust_info, cluster_features, n_components=13):
+def scale_and_reduce(cust_info, cluster_features):
     
     X = cust_info[cluster_features]
 
@@ -84,11 +88,41 @@ def scale_and_reduce(cust_info, cluster_features, n_components=13):
         index=cust_info.index
     )
 
-    pca = PCA(n_components=n_components, random_state=42)
-    X_pca = pca.fit_transform(X_scaled)
+    print('Data scaled')
 
-    return X_scaled, X_pca, scaler, pca
+    return X_scaled, scaler
 
 
 def save_data(file, name):
         file.to_csv(f'{name}.csv', index=True)
+        print('\nData saved')
+
+
+cluster_features = [
+    'age',
+    'year_first_transaction',
+    'progenitores',
+    'spend_per_store',
+    'fresh_food_ratio',
+    'lifetime_spend_groceries',
+    'lifetime_spend_alcohol_drinks',
+    'lifetime_spend_nonalcohol_drinks',
+    'lifetime_spend_hygiene',
+    'lifetime_spend_petfood',
+    'lifetime_total_distinct_products',
+    'percentage_of_products_bought_promotion',
+    'promotion_on_stores_hunter',
+    'distinct_stores_visited',
+    'promotion_guy',
+    'healthy_guy',
+    'tech_enthusiast',
+    'has_loyalty_card',
+    'loyal_long_timer',
+]
+
+if __name__ == '__main__':
+     cust_info=load_data('customer_info.csv')
+     cust_info=clean_data(cust_info)
+     cust_info=create_features(cust_info)
+     X_scaled, scaler = scale_and_reduce(cust_info, cluster_features)
+     save_data(X_scaled, 'X_scaled')

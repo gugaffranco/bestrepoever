@@ -82,11 +82,7 @@ def scale_and_reduce(cust_info, cluster_features):
 
     X_scaled = scaler.fit_transform(X)
 
-    X_scaled = pd.DataFrame(
-        X_scaled,
-        columns=cluster_features,
-        index=cust_info.index
-    )
+    X_scaled = pd.DataFrame(X_scaled, columns=cluster_features, index=cust_info.index)
 
     print('Data scaled')
 
@@ -94,8 +90,8 @@ def scale_and_reduce(cust_info, cluster_features):
 
 
 def save_data(file, name):
-        file.to_csv(f'{name}.csv', index=True)
-        print('\nData saved')
+    file.to_csv(f'{name}.csv', index=True)
+    print('\nData saved')
 
 
 cluster_features = [
